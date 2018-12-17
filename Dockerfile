@@ -1,4 +1,4 @@
-FROM autonomy/toolchain:f3c960a
+FROM autonomy/toolchain:52640c1
 WORKDIR /toolchain/usr/local/src/kernel
 RUN tar --strip-components=1 -xvJf /toolchain/usr/local/src/linux.tar.xz
 ADD https://raw.githubusercontent.com/opencontainers/runc/v1.0.0-rc5/script/check-config.sh /bin/check-config.sh
