@@ -1,7 +1,8 @@
-FROM autonomy/toolchain:52640c1
-WORKDIR /toolchain/usr/local/src/kernel
-RUN tar --strip-components=1 -xvJf /toolchain/usr/local/src/linux.tar.xz
-ADD https://raw.githubusercontent.com/opencontainers/runc/v1.0.0-rc5/script/check-config.sh /bin/check-config.sh
+ARG TOOLCHAIN_VERSION
+FROM autonomy/toolchain:${TOOLCHAIN_VERSION} AS kernel-build
+WORKDIR /src
+RUN curl -L https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.10.tar.xz | tar --strip-components=1 -xvJ
+ADD https://raw.githubusercontent.com/opencontainers/runc/v1.0.0-rc6/script/check-config.sh /bin/check-config.sh
 RUN chmod +x /bin/check-config.sh
 RUN make mrproper
 COPY config .config
@@ -9,9 +10,8 @@ RUN mkdir -p /usr/bin \
     && ln -s /toolchain/bin/env /usr/bin/env \
     && ln -s /toolchain/bin/true /bin/true \
     && ln -s /toolchain/bin/pwd /bin/pwd
-RUN check-config.sh .config
-RUN make -j $(($(nproc) / 2))
-RUN cp arch/x86/boot/bzImage /tmp/vmlinuz
+RUN /bin/check-config.sh .config
+RUN make
 
-FROM scratch
-COPY --from=0 /tmp/vmlinuz /vmlinuz
+FROM scratch AS kernel
+COPY --from=kernel-build /src/arch/x86/boot/bzImage /vmlinuz
