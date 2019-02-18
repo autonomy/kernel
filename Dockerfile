@@ -11,7 +11,7 @@ RUN mkdir -p /usr/bin \
     && ln -s /toolchain/bin/true /bin/true \
     && ln -s /toolchain/bin/pwd /bin/pwd
 RUN /bin/check-config.sh .config
-RUN make
+RUN make -j $(($(nproc) / 2))
 
 FROM scratch AS kernel
 COPY --from=kernel-build /src/arch/x86/boot/bzImage /vmlinuz
