@@ -1,7 +1,7 @@
 ARG TOOLCHAIN_VERSION
 FROM autonomy/toolchain:${TOOLCHAIN_VERSION} AS kernel-build
 WORKDIR /src
-RUN curl -L https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.10.tar.xz | tar --strip-components=1 -xvJ
+RUN tar --strip-components=1 -xvJf /tmp/linux.tar.xz
 ADD https://raw.githubusercontent.com/opencontainers/runc/v1.0.0-rc6/script/check-config.sh /bin/check-config.sh
 RUN chmod +x /bin/check-config.sh
 RUN make mrproper
