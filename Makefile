@@ -1,6 +1,6 @@
 TAG := $(shell gitmeta image tag)
 
-TOOLCHAIN_VERSION ?= 1cad5fc
+TOOLCHAIN_VERSION ?= 7362500
 
 export DOCKER_BUILDKIT := 1
 
