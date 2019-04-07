@@ -14,4 +14,5 @@ RUN /bin/check-config.sh .config
 RUN make -j $(($(nproc) / 2))
 
 FROM scratch AS kernel
+COPY --from=kernel-build /src/vmlinux /vmlinux
 COPY --from=kernel-build /src/arch/x86/boot/bzImage /vmlinuz
