@@ -1,7 +1,7 @@
-ARG TOOLCHAIN_VERSION
-FROM autonomy/toolchain:${TOOLCHAIN_VERSION} AS kernel-build
+ARG TOOLCHAIN_IMAGE
+FROM ${TOOLCHAIN_IMAGE} AS kernel-build
 WORKDIR /src
-RUN tar --strip-components=1 -xvJf /tmp/linux.tar.xz
+RUN tar --strip-components=1 -xJf /tmp/linux.tar.xz
 ADD https://raw.githubusercontent.com/opencontainers/runc/v1.0.0-rc6/script/check-config.sh /bin/check-config.sh
 RUN chmod +x /bin/check-config.sh
 RUN make mrproper
