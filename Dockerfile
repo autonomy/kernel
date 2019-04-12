@@ -15,9 +15,9 @@ RUN make -j $(($(nproc) / 2))
 COPY patches/Makefile_module.builtin.patch /src/Makefile_module.builtin.patch
 RUN patch < Makefile_module.builtin.patch
 RUN make -j $(($(nproc) / 2)) modules
-RUN KERNELRELEASE=$(cat include/config/kernel.release) \
-     mkdir modules \
-     && cp modules.builtin ./modules/$KERNELRELEASE
+RUN export KERNELRELEASE=$(cat include/config/kernel.release) \
+     && mkdir -p modules/$KERNELRELEASE \
+     && cp modules.builtin ./modules/$KERNELRELEASE/
 
 FROM scratch AS kernel
 COPY --from=kernel-build /src/vmlinux /vmlinux
