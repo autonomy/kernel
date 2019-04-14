@@ -11,13 +11,22 @@ COMMON_ARGS += --frontend-opt build-arg:TOOLCHAIN_IMAGE=$(TOOLCHAIN_IMAGE)
 
 all: kernel
 
-kernel-build:
+kernel-src:
 	@buildctl --addr $(BUILDKIT_HOST) \
 		build \
 		--exporter=docker \
 		--exporter-opt output=$@.tar \
 		--exporter-opt name=docker.io/autonomy/$@:$(TAG) \
 		--frontend-opt build-arg:TOOLCHAIN_IMAGE=$(TOOLCHAIN_IMAGE) \
+		--frontend-opt target=$@ \
+		$(COMMON_ARGS)
+
+kernel-build:
+	@buildctl --addr $(BUILDKIT_HOST) \
+		build \
+		--exporter=docker \
+		--exporter-opt output=$@.tar \
+		--exporter-opt name=docker.io/autonomy/$@:$(TAG) \
 		--frontend-opt target=$@ \
 		$(COMMON_ARGS)
 

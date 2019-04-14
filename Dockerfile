@@ -1,11 +1,13 @@
 ARG TOOLCHAIN_IMAGE
-FROM ${TOOLCHAIN_IMAGE} AS kernel-build
+FROM ${TOOLCHAIN_IMAGE} AS kernel-src
 WORKDIR /src
 RUN tar --strip-components=1 -xJf /tmp/linux.tar.xz
 ADD https://raw.githubusercontent.com/opencontainers/runc/v1.0.0-rc6/script/check-config.sh /bin/check-config.sh
 RUN chmod +x /bin/check-config.sh
 RUN make mrproper
 COPY config .config
+
+FROM kernel-src AS kernel-build
 RUN mkdir -p /usr/bin \
     && ln -s /toolchain/bin/env /usr/bin/env \
     && ln -s /toolchain/bin/true /bin/true \
