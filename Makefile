@@ -7,37 +7,31 @@ COMMON_ARGS = --progress=plain
 COMMON_ARGS += --frontend=dockerfile.v0
 COMMON_ARGS += --local context=.
 COMMON_ARGS += --local dockerfile=.
-COMMON_ARGS += --frontend-opt build-arg:TOOLCHAIN_IMAGE=$(TOOLCHAIN_IMAGE)
+COMMON_ARGS += --opt build-arg:TOOLCHAIN_IMAGE=$(TOOLCHAIN_IMAGE)
+
+BUILDKIT_HOST ?= tcp://0.0.0.0:1234
 
 all: kernel
 
 kernel-src:
 	@buildctl --addr $(BUILDKIT_HOST) \
 		build \
-		--exporter=docker \
-		--exporter-opt output=$@.tar \
-		--exporter-opt name=docker.io/autonomy/$@:$(TAG) \
-		--frontend-opt build-arg:TOOLCHAIN_IMAGE=$(TOOLCHAIN_IMAGE) \
-		--frontend-opt target=$@ \
+		--output type=docker,dest=$@.tar,name=docker.io/autonomy/$@:$(TAG) \
+		--opt build-arg:TOOLCHAIN_IMAGE=$(TOOLCHAIN_IMAGE),target=$@ \
 		$(COMMON_ARGS)
 
 kernel-build:
 	@buildctl --addr $(BUILDKIT_HOST) \
 		build \
-		--exporter=docker \
-		--exporter-opt output=$@.tar \
-		--exporter-opt name=docker.io/autonomy/$@:$(TAG) \
-		--frontend-opt target=$@ \
+		--output type=docker,dest=$@.tar,name=docker.io/autonomy/$@:$(TAG) \
+		--opt target=$@ \
 		$(COMMON_ARGS)
 
 kernel:
 	@buildctl --addr $(BUILDKIT_HOST) \
 		build \
-		--exporter=docker \
-		--exporter-opt output=$@.tar \
-		--exporter-opt name=docker.io/autonomy/$@:$(TAG) \
-		--frontend-opt build-arg:TOOLCHAIN_IMAGE=$(TOOLCHAIN_IMAGE) \
-		--frontend-opt target=$@ \
+		--output type=docker,dest=$@.tar,name=docker.io/autonomy/$@:$(TAG) \
+		--opt build-arg:TOOLCHAIN_IMAGE=$(TOOLCHAIN_IMAGE),target=$@ \
 		$(COMMON_ARGS)
 	@docker load < $@.tar
 
