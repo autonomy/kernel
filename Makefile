@@ -1,6 +1,6 @@
 TAG = $(shell gitmeta image tag)
 
-TOOLCHAIN_VERSION = 0b40011
+TOOLCHAIN_VERSION = 397e6c2
 TOOLCHAIN_IMAGE = autonomy/toolchain:$(TOOLCHAIN_VERSION)
 
 COMMON_ARGS = --progress=plain
