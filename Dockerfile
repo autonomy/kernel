@@ -14,16 +14,10 @@ RUN mkdir -p /usr/bin \
     && ln -s /toolchain/bin/pwd /bin/pwd
 RUN /bin/check-config.sh .config
 RUN make -j $(($(nproc) / 2))
-COPY patches/Makefile_module.builtin.patch /src/Makefile_module.builtin.patch
-RUN patch < Makefile_module.builtin.patch
 RUN make -j $(($(nproc) / 2)) modules
-# All of this nonsense is to work around software that wasnt designed for static kernels
 RUN export KERNELRELEASE=$(cat include/config/kernel.release) \
-     && mkdir -p modules/$KERNELRELEASE \
-     && cp modules.builtin ./modules/$KERNELRELEASE/ \
-     && touch ./modules/$KERNELRELEASE/{modules.alias,modules.dep,modules.devname,modules.order,modules.softdep,modules.symbols,modules.alias.bin,modules.dep.bin,modules.devname.bin,modules.order.bin,modules.softdep.bin,modules.symbols.bin}
-
-
+    && make -j $(nproc) modules_install DEPMOD=/toolchain/bin/depmod INSTALL_MOD_PATH=./modules/$KERNELRELEASE \
+    && depmod -b ./modules/$KERNELRELEASE $KERNELRELEASE
 FROM scratch AS kernel
 COPY --from=kernel-build /src/vmlinux /vmlinux
 COPY --from=kernel-build /src/arch/x86/boot/bzImage /vmlinuz
