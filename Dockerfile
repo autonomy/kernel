@@ -16,8 +16,8 @@ RUN /bin/check-config.sh .config
 RUN make -j $(($(nproc) / 2))
 RUN make -j $(($(nproc) / 2)) modules
 RUN export KERNELRELEASE=$(cat include/config/kernel.release) \
-    && make -j $(nproc) modules_install DEPMOD=/toolchain/bin/depmod INSTALL_MOD_PATH=./modules/$KERNELRELEASE \
-    && depmod -b ./modules/$KERNELRELEASE $KERNELRELEASE
+    && make -j $(nproc) modules_install DEPMOD=/toolchain/bin/depmod INSTALL_MOD_PATH=./modules \
+    && depmod -b ./modules $KERNELRELEASE
 FROM scratch AS kernel
 COPY --from=kernel-build /src/vmlinux /vmlinux
 COPY --from=kernel-build /src/arch/x86/boot/bzImage /vmlinuz
